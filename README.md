@@ -1,4 +1,7 @@
-# tui-rs
+# tui-rs - happycoder97 fork
+
+> Originally by https://github.com/fdehau/tui-rs  
+> Scroll to the end for what's changed.
 
 [![Build Status](https://github.com/fdehau/tui-rs/workflows/CI/badge.svg)](https://github.com/fdehau/tui-rs/actions?query=workflow%3ACI+)
 [![Crate Status](https://img.shields.io/crates/v/tui.svg)](https://crates.io/crates/tui)
@@ -114,3 +117,12 @@ alternative solution to build text user interfaces in Rust.
 ## License
 
 [MIT](LICENSE)
+
+## What's changed in this fork
+I felt that a lot of things can be simplified if `Widget::render()` and `StatefulWidget::render()` take `&self` instead of `self`.
+So I just refactored the code to do that instead. Surprisingly it was really easy.  Rust ❤️.
+
+I also feel that `StatefulWidget` is unnecessary because you can keep the state in the Widget structs itself.
+And logically, `render()` function need not modify the state.  
+I haven't done this part yet, but in my applications I will be mostly using `Widget` only, even when I need state.  
+Let me know what you think.
