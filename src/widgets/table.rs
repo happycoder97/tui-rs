@@ -211,19 +211,19 @@ where
 
 impl<'a, H, D, R> StatefulWidget for Table<'a, H, R>
 where
-    H: Iterator,
+    H: Iterator + Clone,
     H::Item: Display,
     D: Iterator,
     D::Item: Display,
-    R: Iterator<Item = Row<D>>,
+    R: Iterator<Item = Row<D>> + Clone,
 {
     type State = TableState;
 
-    fn render(mut self, area: Rect, buf: &mut Buffer, state: &mut Self::State) {
+    fn render(&self, area: Rect, buf: &mut Buffer, state: &mut Self::State) {
         buf.set_style(area, self.style);
 
         // Render block if necessary and get the drawing area
-        let table_area = match self.block.take() {
+        let table_area = match self.block.as_ref() {
             Some(b) => {
                 let inner_area = b.inner(area);
                 b.render(area, buf);
@@ -283,7 +283,7 @@ where
 
         // Draw header
         if y < table_area.bottom() {
-            for (w, t) in solved_widths.iter().zip(self.header.by_ref()) {
+            for (w, t) in solved_widths.iter().zip(self.header.clone().by_ref()) {
                 buf.set_stringn(x, y, format!("{}", t), *w as usize, self.header_style);
                 x += *w + self.column_spacing;
             }
@@ -317,7 +317,7 @@ where
             } else {
                 0
             };
-            for (i, row) in self.rows.skip(state.offset).take(remaining).enumerate() {
+            for (i, row) in self.rows.clone().skip(state.offset).take(remaining).enumerate() {
                 let (data, style, symbol) = match row {
                     Row::Data(d) | Row::StyledData(d, _)
                         if Some(i) == state.selected.map(|s| s - state.offset) =>
@@ -344,13 +344,13 @@ where
 
 impl<'a, H, D, R> Widget for Table<'a, H, R>
 where
-    H: Iterator,
+    H: Iterator+Clone,
     H::Item: Display,
     D: Iterator,
     D::Item: Display,
-    R: Iterator<Item = Row<D>>,
+    R: Iterator<Item = Row<D>> + Clone,
 {
-    fn render(self, area: Rect, buf: &mut Buffer) {
+    fn render(&self, area: Rect, buf: &mut Buffer) {
         let mut state = TableState::default();
         StatefulWidget::render(self, area, buf, &mut state);
     }

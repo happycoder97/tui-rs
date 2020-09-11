@@ -134,7 +134,7 @@ impl<'a> Block<'a> {
 }
 
 impl<'a> Widget for Block<'a> {
-    fn render(self, area: Rect, buf: &mut Buffer) {
+    fn render(&self, area: Rect, buf: &mut Buffer) {
         buf.set_style(area, self.style);
 
         if area.width < 2 || area.height < 2 {
@@ -196,7 +196,7 @@ impl<'a> Widget for Block<'a> {
                 .set_style(self.border_style);
         }
 
-        if let Some(title) = self.title {
+        if let Some(title) = self.title.as_ref() {
             let lx = if self.borders.intersects(Borders::LEFT) {
                 1
             } else {

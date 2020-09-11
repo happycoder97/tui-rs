@@ -368,9 +368,9 @@ impl<'a> Chart<'a> {
 }
 
 impl<'a> Widget for Chart<'a> {
-    fn render(mut self, area: Rect, buf: &mut Buffer) {
+    fn render(&self, area: Rect, buf: &mut Buffer) {
         buf.set_style(area, self.style);
-        let chart_area = match self.block.take() {
+        let chart_area = match self.block.as_ref() {
             Some(b) => {
                 let inner_area = b.inner(area);
                 b.render(area, buf);
@@ -386,17 +386,17 @@ impl<'a> Widget for Chart<'a> {
         }
 
         if let Some((x, y)) = layout.title_x {
-            let title = self.x_axis.title.unwrap();
+            let title = self.x_axis.title.as_ref().unwrap();
             buf.set_spans(x, y, &title, graph_area.right().saturating_sub(x));
         }
 
         if let Some((x, y)) = layout.title_y {
-            let title = self.y_axis.title.unwrap();
+            let title = self.y_axis.title.as_ref().unwrap();
             buf.set_spans(x, y, &title, graph_area.right().saturating_sub(x));
         }
 
         if let Some(y) = layout.label_x {
-            let labels = self.x_axis.labels.unwrap();
+            let labels = self.x_axis.labels.as_ref().unwrap();
             let total_width = labels.iter().fold(0, |acc, l| l.content.width() + acc) as u16;
             let labels_len = labels.len() as u16;
             if total_width < graph_area.width && labels_len > 1 {
@@ -413,7 +413,7 @@ impl<'a> Widget for Chart<'a> {
         }
 
         if let Some(x) = layout.label_y {
-            let labels = self.y_axis.labels.unwrap();
+            let labels = self.y_axis.labels.as_ref().unwrap();
             let labels_len = labels.len() as u16;
             for (i, label) in labels.iter().enumerate() {
                 let dy = i as u16 * (graph_area.height - 1) / (labels_len - 1);

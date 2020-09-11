@@ -84,9 +84,9 @@ impl<'a> Gauge<'a> {
 }
 
 impl<'a> Widget for Gauge<'a> {
-    fn render(mut self, area: Rect, buf: &mut Buffer) {
+    fn render(&self, area: Rect, buf: &mut Buffer) {
         buf.set_style(area, self.style);
-        let gauge_area = match self.block.take() {
+        let gauge_area = match self.block.as_ref() {
             Some(b) => {
                 let inner_area = b.inner(area);
                 b.render(area, buf);
@@ -104,9 +104,14 @@ impl<'a> Widget for Gauge<'a> {
         let end = gauge_area.left() + width;
         // Label
         let ratio = self.ratio;
-        let label = self
-            .label
-            .unwrap_or_else(|| Span::from(format!("{}%", (ratio * 100.0).round())));
+        let label_default;
+        let label = match self.label.as_ref() {
+            Some(label) => label,
+            None => {
+                label_default = Span::from(format!("{}%", (ratio * 100.0).round()));
+                &label_default
+            }
+        };
         for y in gauge_area.top()..gauge_area.bottom() {
             // Gauge
             for x in gauge_area.left()..end {
